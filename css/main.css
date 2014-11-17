@@ -11,3 +11,27 @@ body {
     margin-right: 10px;
 }
 
+#user-name {
+    width: 20%;
+}
+
+#comment {
+    width: 55%;
+}
+
+#rating, #score {
+    width: 10%;
+}
+
+#delete {
+    width: 5%;
+}
+
+span .hoverable {
+    cursor: hand;
+}
+
+.table {
+    table-layout: fixed;
+    word-wrap: break-word;
+}

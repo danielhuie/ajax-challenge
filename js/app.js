@@ -1,8 +1,8 @@
 "use strict";
 /*
-    app.js, main Angular application script
-    define your module and controllers here
-*/
+ app.js, main Angular application script
+ define your module and controllers here
+ */
 
 var url = 'https://api.parse.com/1/classes/input';
 
@@ -12,7 +12,7 @@ angular.module('AjaxApp', ['ui.bootstrap'])
         $httpProvider.defaults.headers.common['X-Parse-REST-API-Key'] = 'Bnmfuwahlec09TcGl5r5hnjmHZrqmXNYQHLWwQaG';
     })
     .controller('AjaxController', function($scope, $http) {
-        $scope.newComment = {done: false, votes: 0, downVotable: true};
+        $scope.newComment = {deleted: false, votes: 0, downVotable: true};
         $scope.sortCol = 'rating';
         $scope.sortReverse = false;
 
@@ -37,22 +37,24 @@ angular.module('AjaxApp', ['ui.bootstrap'])
                 .success(function (responseData) {
                     $scope.newComment.objectId = responseData.objectId;
                     $scope.comments.push($scope.newComment);
-                    $scope.newComment = {done: false};
                     console.log("successfully added a new comment to parse");
                 })
                 .error(function (err) {
                     $scope.errorMessage = err;
-                });
+                })
+                .finally(function() {
+                    $scope.form.$setPristine();
+                })
         };
 
         $scope.incrementVotes = function(comment, amount) {
             $scope.updating = true;
-            if (amount == 1 || comment.downVotable) {
-                $scope.updateVotes(comment, amount)
-            } else if (comment.votes == 0) {
+            if (amount == 1) {
+                $scope.updateVotes(comment, amount);
+            } else if (comment.votes == 0 && amount == -1) {
                 comment.downVotable = false;
-            } else if (amount == -1) {
-                $scope.updateVotes(comment, amount)
+            } else if (amount == -1 && comment.downVotable) {
+                $scope.updateVotes(comment, amount);
             }
         };
 
@@ -64,11 +66,9 @@ angular.module('AjaxApp', ['ui.bootstrap'])
                 }
             })
                 .success(function (responseData) {
-                    console.log(responseData);
                     comment.votes = responseData.votes;
                 })
                 .error(function (err) {
-
                 })
                 .finally(function () {
                     $scope.updating = false;
@@ -78,6 +78,7 @@ angular.module('AjaxApp', ['ui.bootstrap'])
         $scope.deleteComment = function (comment) {
             $http.delete(url + '/' + comment.objectId, comment)
                 .success(function (responseData) {
+                    $scope.comment = {deleted: true};
                     console.log("successfully removed a new comment from parse");
                 })
                 .error(function (err) {

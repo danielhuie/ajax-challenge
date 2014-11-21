@@ -1,5 +1,4 @@
-<!--work on angularjs form validation-->
-<!--apply "no comments to show" if comments object is empty-->
+<!--work on loading gif-->
 <!--fix comment.done for readonly of comment rating submission-->
 <!--hover on upvote or downvote-->
 <!--i've removed comment from parse, but comments object isn't updating in html-->
@@ -17,68 +16,66 @@
     </head>
     <body>
         <main class="container" ng-app="AjaxApp" ng-controller="AjaxController">
-            <section>
-                <img src="img/super-bass-o-matic-76.jpg" alt="product picture" class="product-picture">
+            <section id="item">
+                <img src="img/super-bass-o-matic-76.jpg" alt="product picture" class="product-picture img-rounded">
                 <h1>The Super Bass-o-Matic '76</h1>
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Officia cumque deserunt ullam repudiandae nisi corporis! Ipsum, ducimus commodi, itaque porro distinctio consequuntur! Autem doloremque numquam nemo ex nulla tempora quis! Lorem ipsum dolor sit amet, consectetur adipisicing elit. Unde nihil doloribus excepturi quisquam error possimus veritatis facere, commodi cumque ab atque dolore ducimus obcaecati ipsa, impedit! Consequuntur, eligendi iure cumque!</p>
             </section>
 
-            <section id="add-comments">
+            <section id="add-comments" class="well">
                 <h2>Add a Comment</h2>
-                <!--  
-                put a form here for entering a new comment
-                the user must select a rating, and enter a name, title, and comment body
-                before the comment can be saved to the server
-                for the rating selection, use the Angular Bootstrap Rating directive 
-                http://angular-ui.github.io/bootstrap/#/rating
-                their script file is included below
-                -->
                 <form name="form" class="form-horizontal" role="form" novalidate>
                     <!--rating-->
                     <div class="form-group">
                         <label for="rating" class="col-sm-2 control-label">Rating</label>
-                        <div class="col-sm-10">
-                            <rating max="5" ng-model="newComment.rating"></rating>
+                        <div class="col-sm-10" ng-class="{ 'has-error' : form.name.$invalid && !form.name.$pristine }">
+                            <rating max="5" ng-model="newComment.rating" required></rating>
                         </div>
                     </div>
 
                     <!--name-->
                     <div class="form-group">
                         <label for="name" class="col-sm-2 control-label">Name</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="name" placeholder="Name" ng-model="newComment.name">
+                        <div class="col-sm-10" ng-class="{ 'has-error' : form.name.$invalid && !form.name.$pristine }">
+                            <input type="text" class="form-control" name="name" id="name" placeholder="Name" ng-model="newComment.name" required>
+                            <p ng-show="form.name.$invalid && !form.name.$pristine" class="help-block">Your name is required.</p>
                         </div>
                     </div>
 
                     <!--title-->
                     <div class="form-group">
                         <label for="title" class="col-sm-2 control-label">Title</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="title" placeholder="Title" ng-model="newComment.title">
+                        <div class="col-sm-10" ng-class="{ 'has-error' : form.title.$invalid && !form.title.$pristine }">
+                            <input type="text" class="form-control" name="title" id="title" placeholder="Title" ng-model="newComment.title" required>
+                            <p ng-show="form.title.$invalid && !form.title.$pristine" class="help-block">A title is required.</p>
                         </div>
                     </div>
 
                     <!--comment-->
                     <div class="form-group">
                         <label for="comment" class="col-sm-2 control-label">Comment</label>
-                        <div class="col-sm-10">
-                            <textarea class="form-control" rows="3" placeholder="Enter your comment here" ng-model="newComment.comment"></textarea>
+                        <div class="col-sm-10" ng-class="{ 'has-error' : form.comment.$invalid && !form.comment.$pristine }">
+                            <textarea class="form-control" name="comment" rows="3" placeholder="Enter your comment here" ng-model="newComment.comment" required></textarea>
+                            <p ng-show="form.comment.$invalid && !form.comment.$pristine" class="help-block">Your comment is required.</p>
                         </div>
                     </div>
 
                     <!--submit-->
                     <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-10">
-                            <button type="submit" class="btn btn-default" ng-click="addComment()">Submit</button>
+                            <button type="submit" class="btn btn-default" ng-click="addComment()" ng-disabled="form.$invalid">Submit</button>
                         </div>
                     </div>
                 </form>
             </section>
 
-            <section>
-                <h2>Comments</h2>
 
-                <table class="table table-striped">
+
+
+            <section>
+                <h2>Comments <img ng-show="loading" id="ajax-loader" src="img/ajax-spinner-sm.gif" alt="loading comments"/></h2>
+                <p ng-show="comments.length == 0">no comments yet. Be the first to review this!</p>
+                <table class="table table-striped" ng-show="comments.length > 0">
                     <thead>
                         <tr>
                             <th id="user-name">Name</th>
@@ -88,29 +85,19 @@
                             <th id="delete"></th>
                         </tr>
                     </thead>
-                        <tr ng-repeat="comment in comments | orderBy : sortCol : !sortReverse">
-                            <td>{{comment.name}}</td>
-                            <td>{{comment.comment}}</td>
-                            <td><rating max="5" ng-model="comment.rating" ng-change="updateComment(comment)" readOnly="comment.done"></rating></td>
-                            <td>
-                                {{comment.votes || 0}}
-                                <span class="glyphicon glyphicon-thumbs-up" ng-click="incrementVotes(comment, 1)"></span>
-                                <span class="glyphicon glyphicon-thumbs-down" ng-click="incrementVotes(comment, -1)"></span>
-                            </td>
-                            <td>
-                                <span class="glyphicon glyphicon-remove-circle" ng-click="deleteComment(comment); refreshComments()"></span>
-                            </td>
-                        </tr>
-                    <!--<td ng-class="{done: comment.done}">{{comment.title}}</td>-->
-                    <!--<td>-->
-                    <!--<rating ng-class="{done: task.done}" max="3" ng-model="task.priority" ng-change="updateTask(task)" readOnly="task.done"></rating>-->
-                    <!--</td>-->
-                    <!--<td>-->
-                    <!--{{task.votes || 0}}-->
-                    <!--<span class="glyphicon glyphicon-thumbs-up" ng-click="incrementVotes(task, 1)"></span>-->
-                    <!--<span class="glyphicon glyphicon-thumbs-down" ng-click="incrementVotes(task, -1)"></span>-->
-                    <!--</td>-->
-                    <!--<td><input type="checkbox" ng-model="task.done" ng-change="updateTask(task)"/></td>-->
+                    <tr ng-repeat="comment in comments | orderBy : sortCol : !sortReverse">
+                        <td>{{comment.name}}</td>
+                        <td>{{comment.comment}}</td>
+                        <td><rating max="5" ng-model="comment.rating" ng-change="updateComment(comment)" readOnly="comment.votes != null"></rating></td>
+                        <td>
+                            {{comment.votes || 0}}
+                            <span class="glyphicon glyphicon-thumbs-up" ng-click="incrementVotes(comment, 1)"></span>
+                            <span class="glyphicon glyphicon-thumbs-down" ng-click="incrementVotes(comment, -1)"></span>
+                        </td>
+                        <td>
+                            <span class="glyphicon glyphicon-remove-circle" ng-click="deleteComment(comment)"></span>
+                        </td>
+                    </tr>
                 </table>
 
                 <div ng-repeat="comment in comments"></div>

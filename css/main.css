@@ -16,7 +16,7 @@ body {
 }
 
 #comment {
-    width: 55%;
+    width: 50%;
 }
 
 #rating, #score {
@@ -24,7 +24,7 @@ body {
 }
 
 #delete {
-    width: 5%;
+    width: 10%;
 }
 
 span .hoverable {
@@ -35,3 +35,8 @@ span .hoverable {
     table-layout: fixed;
     word-wrap: break-word;
 }
+
+#item {
+    padding-bottom: 30px;
+}
+

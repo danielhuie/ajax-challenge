@@ -15,6 +15,7 @@ angular.module('AjaxApp', ['ui.bootstrap'])
         $scope.newComment = {deleted: false, votes: 0, downVotable: true};
         $scope.sortCol = 'rating';
         $scope.sortReverse = false;
+        $scope.numDeleted = 0;
 
         $scope.refreshComments = function () {
             $scope.loading = true;
@@ -43,7 +44,7 @@ angular.module('AjaxApp', ['ui.bootstrap'])
                     $scope.errorMessage = err;
                 })
                 .finally(function() {
-                    $scope.form.$setPristine();
+                    $scope.form.$pristine = true;
                 })
         };
 
@@ -78,7 +79,8 @@ angular.module('AjaxApp', ['ui.bootstrap'])
         $scope.deleteComment = function (comment) {
             $http.delete(url + '/' + comment.objectId, comment)
                 .success(function (responseData) {
-                    $scope.comment = {deleted: true};
+                    comment.deleted = true;
+                    $scope.numDeleted++;
                     console.log("successfully removed a new comment from parse");
                 })
                 .error(function (err) {

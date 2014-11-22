@@ -63,7 +63,7 @@
                     <!--submit-->
                     <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-10">
-                            <button type="submit" class="btn btn-default" ng-click="addComment()" ng-disabled="form.$invalid">Submit</button>
+                            <button type="submit" id="submit" class="btn btn-default" ng-click="addComment()" ng-disabled="form.$invalid">Submit</button>
                         </div>
                     </div>
                 </form>
@@ -74,8 +74,8 @@
 
             <section>
                 <h2>Comments <img ng-show="loading" id="ajax-loader" src="img/ajax-spinner-sm.gif" alt="loading comments"/></h2>
-                <p ng-show="comments.length == 0">no comments yet. Be the first to review this!</p>
-                <table class="table table-striped" ng-show="comments.length > 0">
+                <p ng-show="comments.length == numDeleted">no comments yet. Be the first to review this!</p>
+                <table class="table table-striped" ng-show="comments.length != numDeleted">
                     <thead>
                         <tr>
                             <th id="user-name">Name</th>
@@ -85,7 +85,7 @@
                             <th id="delete"></th>
                         </tr>
                     </thead>
-                    <tr ng-repeat="comment in comments | orderBy : sortCol : !sortReverse">
+                    <tr ng-repeat="comment in comments | filter:comment.deleted === false | orderBy : sortCol : !sortReverse">
                         <td>{{comment.name}}</td>
                         <td>{{comment.comment}}</td>
                         <td><rating max="5" ng-model="comment.rating" ng-change="updateComment(comment)" readOnly="comment.votes != null"></rating></td>
@@ -99,13 +99,6 @@
                         </td>
                     </tr>
                 </table>
-
-                <div ng-repeat="comment in comments"></div>
-                <!-- 
-                display existing comments here
-                each comment should also have UI allowing the user to vote up/down the comment
-                as well as delete it
-                 -->
             </section>
 
         </main>

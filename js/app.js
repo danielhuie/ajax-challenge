@@ -15,7 +15,6 @@ angular.module('AjaxApp', ['ui.bootstrap'])
         $scope.newComment = {deleted: false, votes: 0, downVotable: true};
         $scope.sortCol = 'rating';
         $scope.sortReverse = false;
-        $scope.numDeleted = 0;
 
         $scope.refreshComments = function () {
             $scope.loading = true;
@@ -34,22 +33,23 @@ angular.module('AjaxApp', ['ui.bootstrap'])
         $scope.refreshComments();
 
         $scope.addComment = function () {
+            $scope.loading = true;
             $http.post(url, $scope.newComment)
                 .success(function (responseData) {
                     $scope.newComment.objectId = responseData.objectId;
                     $scope.comments.push($scope.newComment);
-                    console.log("successfully added a new comment to parse");
                 })
                 .error(function (err) {
                     $scope.errorMessage = err;
                 })
                 .finally(function() {
-                    $scope.form.$pristine = true;
+                    $scope.form.$setPristine();
+                    $scope.newComment = {deleted: false, votes: 0, downVotable: true};
+                    $scope.loading = false;
                 })
         };
 
         $scope.incrementVotes = function(comment, amount) {
-            $scope.updating = true;
             if (amount == 1) {
                 $scope.updateVotes(comment, amount);
             } else if (comment.votes == 0 && amount == -1) {
@@ -70,22 +70,17 @@ angular.module('AjaxApp', ['ui.bootstrap'])
                     comment.votes = responseData.votes;
                 })
                 .error(function (err) {
-                })
-                .finally(function () {
-                    $scope.updating = false;
+                    $scope.errorMessage = err;
                 });
         };
 
         $scope.deleteComment = function (comment) {
             $http.delete(url + '/' + comment.objectId, comment)
-                .success(function (responseData) {
-                    comment.deleted = true;
-                    $scope.numDeleted++;
-                    console.log("successfully removed a new comment from parse");
+                .success(function(respData) {
+                    $scope.refreshComments();
                 })
                 .error(function (err) {
                     $scope.errorMessage = err;
-                    console.log("error");
                 });
         };
 

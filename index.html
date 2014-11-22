@@ -74,10 +74,11 @@
 
             <section>
                 <h2>Comments <img ng-show="loading" id="ajax-loader" src="img/ajax-spinner-sm.gif" alt="loading comments"/></h2>
-                <p ng-show="comments.length == numDeleted">no comments yet. Be the first to review this!</p>
-                <table class="table table-striped" ng-show="comments.length != numDeleted">
+                <p ng-show="comments.length == 0">no comments yet. Be the first to review this!</p>
+                <table class="table table-striped" ng-show="comments.length > 0">
                     <thead>
                         <tr>
+                            <th id="comment-title">Title</th>
                             <th id="user-name">Name</th>
                             <th id="comment">Comment</th>
                             <th id="rating">Rating</th>
@@ -85,14 +86,15 @@
                             <th id="delete"></th>
                         </tr>
                     </thead>
-                    <tr ng-repeat="comment in comments | filter:comment.deleted === false | orderBy : sortCol : !sortReverse">
+                    <tr ng-repeat="comment in comments | orderBy : sortCol : !sortReverse">
+                        <td>{{comment.title}}</td>
                         <td>{{comment.name}}</td>
                         <td>{{comment.comment}}</td>
                         <td><rating max="5" ng-model="comment.rating" ng-change="updateComment(comment)" readOnly="comment.votes != null"></rating></td>
                         <td>
                             {{comment.votes || 0}}
-                            <span class="glyphicon glyphicon-thumbs-up" ng-click="incrementVotes(comment, 1)"></span>
-                            <span class="glyphicon glyphicon-thumbs-down" ng-click="incrementVotes(comment, -1)"></span>
+                            <span class="glyphicon glyphicon-thumbs-up" ng-click="incrementVotes(comment, 1)"><a href=""></a></span>
+                            <span class="glyphicon glyphicon-thumbs-down" ng-click="incrementVotes(comment, -1)"><a href=""></a></span>
                         </td>
                         <td>
                             <span class="glyphicon glyphicon-remove-circle" ng-click="deleteComment(comment)"></span>

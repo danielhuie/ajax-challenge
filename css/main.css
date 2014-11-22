@@ -11,24 +11,20 @@ body {
     margin-right: 10px;
 }
 
-#user-name {
-    width: 20%;
+#comment-title {
+    width: 15%;
+}
+
+#user-name, #rating, #score {
+    width: 10%;
 }
 
 #comment {
-    width: 50%;
-}
-
-#rating, #score {
-    width: 10%;
+    width: 35%;
 }
 
 #delete {
-    width: 10%;
-}
-
-span .hoverable {
-    cursor: hand;
+    width: 5%;
 }
 
 .table {
@@ -39,4 +35,3 @@ span .hoverable {
 #item {
     padding-bottom: 30px;
 }
-
